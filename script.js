@@ -9,7 +9,7 @@ const btnsOpenModal = document.querySelectorAll('.btn--show-modal');
 const btnScroll = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
 // Плавный скрол навигации сайта
-const navLinks = document.querySelectorAll('.nav__links');
+const navLinks = document.querySelector('.nav__links');
 
 ///////////////////////////////////////
 
