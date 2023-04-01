@@ -10,6 +10,10 @@ const btnScroll = document.querySelector('.btn--scroll-to');
 const section1 = document.querySelector('#section--1');
 // Плавный скрол навигации сайта
 const navLinks = document.querySelector('.nav__links');
+// Табы
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContent = document.querySelectorAll('.operations__content');
 
 ///////////////////////////////////////
 
@@ -50,9 +54,33 @@ btnScroll.addEventListener('click', function (e) {
     section1.scrollIntoView({ behavior: 'smooth' });
 });
 
-// Реализация плавного скрола навигации сайта
+// Реализация плавного скрола навигации сайта(делегирование события(event delegation))
 navLinks.addEventListener('click', function (e) {
     e.preventDefault();
     const elemId = e.target.getAttribute('href');
     document.querySelector(elemId)?.scrollIntoView({ behavior: 'smooth' });
+});
+
+// Реализация табов(делегирование события(event delegation))
+tabsContainer.addEventListener('click', function (e) {
+    // "Источник" события
+    const activeBtn = e.target.closest('.operations__tab');
+
+    // "Защитное предложение"(Guard Clause)
+    if (!activeBtn) return;
+
+    tabs.forEach(function (el) {
+        el.classList.remove('operations__tab--active');
+    });
+    activeBtn.classList.add('operations__tab--active');
+
+    // Получаем "активный" контент таба
+    const activeContent = document.querySelector(
+        `.operations__content--${activeBtn.getAttribute('data-tab')}`
+    );
+
+    tabsContent.forEach(function (el) {
+        el.classList.remove('operations__content--active');
+    });
+    activeContent.classList.add('operations__content--active');
 });
