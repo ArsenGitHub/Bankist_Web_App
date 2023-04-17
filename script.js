@@ -14,6 +14,8 @@ const navLinks = document.querySelector('.nav__links');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContent = document.querySelectorAll('.operations__content');
+// Анимация навигационного меню
+const nav = document.querySelector('nav');
 
 ///////////////////////////////////////
 
@@ -65,7 +67,6 @@ navLinks.addEventListener('click', function (e) {
 tabsContainer.addEventListener('click', function (e) {
     // "Источник" события
     const activeBtn = e.target.closest('.operations__tab');
-
     // "Защитное предложение"(Guard Clause)
     if (!activeBtn) return;
 
@@ -73,7 +74,6 @@ tabsContainer.addEventListener('click', function (e) {
         el.classList.remove('operations__tab--active');
     });
     activeBtn.classList.add('operations__tab--active');
-
     // Получаем "активный" контент таба
     const activeContent = document.querySelector(
         `.operations__content--${activeBtn.getAttribute('data-tab')}`
@@ -84,3 +84,30 @@ tabsContainer.addEventListener('click', function (e) {
     });
     activeContent.classList.add('operations__content--active');
 });
+
+//Анимация меню навигации(выцветание(fade animation))(Делегирование события)
+const changeOpacity = function (e) {
+    // Отсев ненужных событии
+    if (e.target.classList.contains('nav__link')) {
+        // Выбираем "инициатора" события
+        const activeLink = e.target;
+        const linkSiblings = activeLink
+            .closest('.nav')
+            .querySelectorAll('.nav__link');
+
+        const logo = activeLink.closest('.nav').querySelector('img');
+
+        linkSiblings.forEach((el) => {
+            // Меняем прозрачность всех линков, кроме активного
+            if (el !== activeLink) {
+                el.style.opacity = this;
+            }
+        });
+        logo.style.opacity = this;
+    }
+};
+
+// Анимация выцветания при наведении
+nav.addEventListener('mouseover', changeOpacity.bind(0.5));
+// Убираем анимацию
+nav.addEventListener('mouseout', changeOpacity.bind(1));
