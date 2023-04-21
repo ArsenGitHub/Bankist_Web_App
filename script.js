@@ -16,10 +16,12 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContent = document.querySelectorAll('.operations__content');
 // Анимация навигационного меню
 const nav = document.querySelector('nav');
+// "Липкое" меню
+const header = document.querySelector('header');
 
 ///////////////////////////////////////
 
-// Модальное окно
+// Реализация модального окна
 const openModal = function (e) {
     e.preventDefault();
     modal.classList.remove('hidden');
@@ -85,7 +87,7 @@ tabsContainer.addEventListener('click', function (e) {
     activeContent.classList.add('operations__content--active');
 });
 
-//Анимация меню навигации(выцветание(fade animation))(Делегирование события)
+//Реализация анимации меню навигации(выцветание(fade animation))(Делегирование события)
 const changeOpacity = function (e) {
     // Отсев ненужных событии
     if (e.target.classList.contains('nav__link')) {
@@ -106,8 +108,25 @@ const changeOpacity = function (e) {
         logo.style.opacity = this;
     }
 };
-
 // Анимация выцветания при наведении
 nav.addEventListener('mouseover', changeOpacity.bind(0.5));
 // Убираем анимацию
 nav.addEventListener('mouseout', changeOpacity.bind(1));
+
+//Реализация "липкого" навигационного меню(Intersection Observer API)
+const stickyCallback = function (entries, observer) {
+    const [entriesObj] = entries;
+    console.log(entriesObj);
+    entriesObj.isIntersecting
+        ? nav.classList.remove('sticky')
+        : nav.classList.add('sticky');
+};
+
+const stickyOptions = {
+    root: null,
+    threshold: 0,
+    rootMargin: `-${nav.getBoundingClientRect().height}px`,
+};
+
+const stickyObserver = new IntersectionObserver(stickyCallback, stickyOptions);
+stickyObserver.observe(header);
