@@ -18,6 +18,8 @@ const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('nav');
 // "Липкое" меню
 const header = document.querySelector('header');
+// Анимация проявления текста при скролле
+const allSections = document.querySelectorAll('.section');
 
 ///////////////////////////////////////
 
@@ -115,9 +117,8 @@ nav.addEventListener('mouseout', changeOpacity.bind(1));
 
 //Реализация "липкого" навигационного меню(Intersection Observer API)
 const stickyCallback = function (entries, observer) {
-    const [entriesObj] = entries;
-    console.log(entriesObj);
-    entriesObj.isIntersecting
+    const [entriesSticky] = entries;
+    entriesSticky.isIntersecting
         ? nav.classList.remove('sticky')
         : nav.classList.add('sticky');
 };
@@ -130,3 +131,25 @@ const stickyOptions = {
 
 const stickyObserver = new IntersectionObserver(stickyCallback, stickyOptions);
 stickyObserver.observe(header);
+
+// Реализация анимации проявления текста при скролле
+const revealCallback = function (entries, observer) {
+    const [entriesReveal] = entries;
+
+    if (!entriesReveal.isIntersecting) return;
+
+    entriesReveal.target.classList.remove('section--hidden');
+    observer.unobserve(entriesReveal.target);
+};
+
+const revealOptions = {
+    root: null,
+    threshold: 0.2,
+};
+
+const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
+
+allSections.forEach(function (el) {
+    el.classList.add('section--hidden');
+    revealObserver.observe(el);
+});
