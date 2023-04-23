@@ -18,8 +18,10 @@ const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('nav');
 // "Липкое" меню
 const header = document.querySelector('header');
-// Анимация проявления текста при скролле
+// Анимация проявления секций при скролле
 const allSections = document.querySelectorAll('.section');
+// Ленивая прогрузка рисунков
+const lazyImg = document.querySelectorAll('img[data-src]');
 
 ///////////////////////////////////////
 
@@ -132,7 +134,7 @@ const stickyOptions = {
 const stickyObserver = new IntersectionObserver(stickyCallback, stickyOptions);
 stickyObserver.observe(header);
 
-// Реализация анимации проявления текста при скролле
+// Реализация анимации проявления секций при скролле(reveal)
 const revealCallback = function (entries, observer) {
     const [entriesReveal] = entries;
 
@@ -152,4 +154,34 @@ const revealObserver = new IntersectionObserver(revealCallback, revealOptions);
 allSections.forEach(function (el) {
     el.classList.add('section--hidden');
     revealObserver.observe(el);
+});
+
+// Реализация ленивой прогрузки рисунков(lazy loading)
+const lazyImgCallback = function (entries, observer) {
+    const [lazyImgEntries] = entries;
+
+    if (!lazyImgEntries.isIntersecting) return;
+
+    const imgTarget = lazyImgEntries.target;
+    imgTarget.src = lazyImgEntries.target.dataset.src;
+    imgTarget.addEventListener('load', function () {
+        imgTarget.classList.remove('lazy-img');
+    });
+
+    observer.unobserve(imgTarget);
+};
+
+const lazyImgOptions = {
+    root: null,
+    treshold: 0,
+    rootMargin: '200px',
+};
+
+const lazyImgObserver = new IntersectionObserver(
+    lazyImgCallback,
+    lazyImgOptions
+);
+
+lazyImg.forEach(function (el) {
+    lazyImgObserver.observe(el);
 });
