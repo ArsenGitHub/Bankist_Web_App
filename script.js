@@ -22,6 +22,12 @@ const header = document.querySelector('header');
 const allSections = document.querySelectorAll('.section');
 // Ленивая прогрузка рисунков
 const lazyImg = document.querySelectorAll('img[data-src]');
+// Слайдер
+const sliderContainer = document.querySelector('.slider');
+const slides = document.querySelectorAll('.slide');
+const sliderBtnLeft = document.querySelector('.slider__btn--left');
+const sliderBtnRight = document.querySelector('.slider__btn--right');
+const dotsContainer = document.querySelector('.dots');
 
 ///////////////////////////////////////
 
@@ -184,4 +190,87 @@ const lazyImgObserver = new IntersectionObserver(
 
 lazyImg.forEach(function (el) {
     lazyImgObserver.observe(el);
+});
+
+// Реализация слайдера
+// Условно хранит значение текущего слайда
+let currSlide = 0;
+
+// Основная логика переключения слайда
+const moveSlides = function (slide) {
+    slides.forEach((el, i) => {
+        el.style.transform = `translateX(${(i - slide) * 100}%)`;
+    });
+};
+
+// Создаем "точки" под слайдером
+const createDots = function () {
+    slides.forEach(function (_, i) {
+        // Создаем точки внутри контейнера точек
+        dotsContainer.insertAdjacentHTML(
+            'beforeend',
+            `<button class="dots__dot" data-slide="${i}"></button>`
+        );
+    });
+};
+
+// Задает активную точку
+const setActiveDot = function (currSlide) {
+    // Убираем активность со всех точек
+    document.querySelectorAll('.dots__dot').forEach(function (el) {
+        el.classList.remove('dots__dot--active');
+    });
+
+    // Назначаем активную точку
+    document
+        .querySelector(`.dots__dot[data-slide="${currSlide}"]`)
+        .classList.add('dots__dot--active');
+};
+
+// Следующий слайд
+const nextSlide = function () {
+    currSlide === slides.length - 1 ? (currSlide = 0) : currSlide++;
+    moveSlides(currSlide);
+    setActiveDot(currSlide);
+};
+// Предыдущий слайд
+const prevSlide = function () {
+    currSlide === 0 ? (currSlide = slides.length - 1) : currSlide--;
+    moveSlides(currSlide);
+    setActiveDot(currSlide);
+};
+
+// Инициализируем слайдер
+const initAll = function () {
+    // Задаем состояние слайдов по-умолчанию
+    moveSlides(0);
+    // Создаем "точки" под слайдами
+    createDots();
+    // Применяем класс активности к "точке"
+    setActiveDot(currSlide);
+};
+
+initAll();
+
+//Смена слайда при нажатии кнопок
+sliderBtnRight.addEventListener('click', nextSlide);
+sliderBtnLeft.addEventListener('click', prevSlide);
+
+//Смена слайда при нажатии "стрелок"
+document.addEventListener('keydown', function (e) {
+    // Сокращенная оценка(Short Circuiting)
+    e.key === 'ArrowRight' && nextSlide();
+    e.key === 'ArrowLeft' && prevSlide();
+});
+
+//Смена слайда при нажатии на точки под слайдером(делегирование событий)
+dotsContainer.addEventListener('click', function (e) {
+    e.preventDefault();
+    // Фильтр от  не нужных событий(Guard Clause)
+    if (!e.target.classList.contains('dots__dot')) return;
+
+    // Перемещаем слайд по кликнутой "точке"
+    moveSlides(e.target.dataset.slide);
+    // Применяем класс активности к "точке"
+    setActiveDot(e.target.dataset.slide);
 });
